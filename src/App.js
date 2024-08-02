@@ -1,41 +1,22 @@
 import React, { useState } from "react";
+import "./App.css";
 import {
   AiOutlineHeart,
   AiFillHeart,
   AiOutlineCheckSquare,
   AiOutlineBorder,
 } from "react-icons/ai";
-import "./App.css";
 
 function TitleBox({ title }) {
   return (
-    <div
-      style={{
-        border: "1px solid red ",
-        fontSize: "small",
-        color: "teal",
-      }}
-    >
+    <div className="title-container">
       <h2 style={{ textAlign: "center" }}>{title}</h2>
     </div>
   );
 }
 
 function ContentBox({ children }) {
-  return (
-    <div
-      style={{
-        padding: "2px",
-        border: "1px solid red",
-        margin: "2px",
-        color: "gray",
-        height: "75vh",
-        overflowY: "auto",
-      }}
-    >
-      {children}
-    </div>
-  );
+  return <div className="content-container">{children}</div>;
 }
 
 function ListBox({ title, items, style, toggleMark, toggleLike }) {
@@ -46,15 +27,7 @@ function ListBox({ title, items, style, toggleMark, toggleLike }) {
         <ContentBox>
           <ul style={{ listStyleType: "none", padding: 0 }}>
             {items.map((item, index) => (
-              <li
-                key={index}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "5px",
-                }}
-              >
+              <li key={index} className="li-style">
                 <span
                   style={{ flex: 0, textAlign: "center", fontSize: "small" }}
                 >
@@ -65,13 +38,9 @@ function ListBox({ title, items, style, toggleMark, toggleLike }) {
                   onClick={() => toggleMark(index)}
                 >
                   {item.marked ? (
-                    <AiOutlineCheckSquare
-                      style={{ verticalAlign: "middle", flex: 1 }}
-                    />
+                    <AiOutlineCheckSquare className="likeIconStyle" />
                   ) : (
-                    <AiOutlineBorder
-                      style={{ verticalAlign: "middle", flex: 1 }}
-                    />
+                    <AiOutlineBorder className="likeIconStyle" />
                   )}
                 </span>
                 <img
@@ -131,17 +100,6 @@ function App() {
     setSongs(allSongs);
   };
 
-  const containerStyle = {
-    display: "flex",
-    justifyContent: "center",
-  };
-
-  const buttonContainerStyle = {
-    display: "flex",
-    justifyContent: "center",
-    padding: "20px",
-  };
-
   const toggleMark = (index) => {
     const updatedSongs = [...songs];
     const markedSong = updatedSongs[index];
@@ -174,13 +132,11 @@ function App() {
   };
 
   return (
-    <div
-      style={{ backgroundColor: "black", width: "100%", minHeight: "100vh" }}
-    >
-      <div style={buttonContainerStyle}>
+    <>
+      <div className="button-container">
         <FetchButton onClick={fetchSongs}></FetchButton>
       </div>
-      <div style={containerStyle}>
+      <div className="container">
         <ListBox
           title="All List"
           items={songs}
@@ -200,7 +156,7 @@ function App() {
           toggleLike={toggleLike}
         />
       </div>
-    </div>
+    </>
   );
 }
 
