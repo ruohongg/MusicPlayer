@@ -7,19 +7,55 @@ import {
   AiOutlineBorder,
 } from "react-icons/ai";
 
-function TitleBox({ title }) {
+type Song = {
+  id: number;
+  title: string;
+  artist: string;
+  cover: string;
+  price: string;
+  marked: boolean;
+  liked: boolean;
+};
+
+type TitleBoxProps = {
+  title: string;
+};
+
+type ContentBoxProps = {
+  children: React.ReactNode;
+};
+
+type ListBoxProps = {
+  title: string;
+  items: Song[];
+  style?: React.CSSProperties;
+  toggleMark: (index: number) => void;
+  toggleLike: (index: number) => void;
+};
+
+type FetchButtonProps = {
+  onClick: () => void;
+};
+
+const TitleBox: React.FC<TitleBoxProps> = ({ title }) => {
   return (
     <div className="title-container">
       <h2 style={{ textAlign: "center" }}>{title}</h2>
     </div>
   );
-}
+};
 
-function ContentBox({ children }) {
+const ContentBox: React.FC<ContentBoxProps> = ({ children }) => {
   return <div className="content-container">{children}</div>;
-}
+};
 
-function ListBox({ title, items, style, toggleMark, toggleLike }) {
+const ListBox: React.FC<ListBoxProps> = ({
+  title,
+  items,
+  style,
+  toggleMark,
+  toggleLike,
+}) => {
   return (
     <div style={{ ...style, border: "1px solid gray", width: "30%" }}>
       <div style={{ border: "1px solid green", margin: "5px" }}>
@@ -70,9 +106,9 @@ function ListBox({ title, items, style, toggleMark, toggleLike }) {
       </div>
     </div>
   );
-}
+};
 
-function FetchButton({ onClick }) {
+const FetchButton: React.FC<FetchButtonProps> = ({ onClick }) => {
   return (
     <div>
       <button onClick={onClick} style={{ width: "100px", height: "30px" }}>
@@ -80,19 +116,19 @@ function FetchButton({ onClick }) {
       </button>
     </div>
   );
-}
+};
 
-function App() {
-  const [songs, setSongs] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-  const [plays, setPlays] = useState([]);
+const App: React.FC = () => {
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [favorites, setFavorites] = useState<Song[]>([]);
+  const [plays, setPlays] = useState<Song[]>([]);
 
   const fetchSongs = async () => {
     const response = await fetch(
       "http://api.itlabpro.io/solo?mykey=ZE1A3QEoQE73C8SnnK4/WNmDD9usbySkoedCbG9N9H0cldhYbVegmFcdOj0Q7Zvd54bN927MiZQ3qqckP5G/5g=="
     );
     const data = await response.json();
-    const allSongs = (data.data || []).map((song) => ({
+    const allSongs = (data.data || []).map((song: Song) => ({
       ...song,
       marked: false, //add marked & liked attribute
       liked: false,
@@ -100,9 +136,9 @@ function App() {
     setSongs(allSongs);
   };
 
-  const toggleMark = (index) => {
+  const toggleMark = (index: number) => {
     const updatedSongs = [...songs];
-    const markedSong = updatedSongs[index];
+    const markedSong: Song = updatedSongs[index];
     markedSong.marked = !markedSong.marked;
 
     if (markedSong.marked) {
@@ -115,9 +151,9 @@ function App() {
     setSongs(updatedSongs);
   };
 
-  const toggleLike = (index) => {
+  const toggleLike = (index: number) => {
     const updatedSongs = [...songs];
-    const likedSong = updatedSongs[index];
+    const likedSong: Song = updatedSongs[index];
     likedSong.liked = !likedSong.liked;
 
     if (likedSong.liked) {
@@ -158,6 +194,6 @@ function App() {
       </div>
     </>
   );
-}
+};
 
 export default App;
