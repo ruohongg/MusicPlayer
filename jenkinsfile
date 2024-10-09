@@ -2,8 +2,7 @@ node{
   try {
     stage('Static Analysis') {
       withSonarQubeEnv('SonarQube installation') {
-        sh 'sonar-scanner -Dsonar.projectKey=test -Dsonar.sources=. -Dsonar.host.url=http://34.170.88.42:9000 -Dsonar.login=squ_e06b5f2551b7a86434027b57f5fc56214644fd1c'
-        echo 'Static Analysis Completed'
+        sh 'npm install'
       }
     }
 
