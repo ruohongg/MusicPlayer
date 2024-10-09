@@ -1,9 +1,14 @@
 node{
   try {
     stage('Static Analysis') {
-      withSonarQubeEnv('SonarQube installation') {
-        sh "${scannerHome}/bin/sonar-scanner"
-      }
+        environment {
+            scannerHome = tool 'SonarScanner'
+        }
+        steps{
+            withSonarQubeEnv('SonarQube installation') {
+                sh "${scannerHome}/bin/sonar-scanner"
+            }
+        }
     }
 
     stage('Quality Gate') {
