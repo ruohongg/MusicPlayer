@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Static Analysis') {
+        stage('Run Sonarqube') {
             steps {
                 withSonarQubeEnv('SonarQube installation') { // 确保 'SonarQube installation' 是 Jenkins 中配置的 SonarQube 服务器名称
                     sh "${scannerHome}/bin/sonar-scanner \
@@ -20,10 +20,12 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    def qg = waitForQualityGate()
-                    if (qg.status != 'OK') {
-                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                script{
+                    timeout(time: 1, unit: 'HOURS') {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
                     }
                 }
                 echo 'Quality Gate Passed'
