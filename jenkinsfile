@@ -1,0 +1,25 @@
+node('master') {
+  try {
+    stage('Static Analysis') {
+      withSonarQubeEnv('SonarQube installation') {
+        sh 'sonar-scanner -Dsonar.projectKey=test -Dsonar.sources=. -Dsonar.host.url=http://34.170.88.42:9000 -Dsonar.login=squ_e06b5f2551b7a86434027b57f5fc56214644fd1c'
+        echo 'Static Analysis Completed'
+      }
+    }
+
+    stage('Quality Gate') {
+      timeout(time: 1, unit: 'HOURS') {
+        def qg = waitForQualityGate()
+        if (qg.status != 'OK') {
+          error "Pipeline aborted due to quality gate failure: ${qg.status}"
+        }
+      }
+      echo 'Quality Gate Passed'
+    }
+
+  } catch (Exception e) {
+    echo "Error: ${e.message}"
+    currentBuild.result = 'FAILURE'
+    throw e
+  }
+}
