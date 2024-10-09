@@ -1,4 +1,4 @@
-node('master') {
+node({}) {
   try {
     stage('Static Analysis') {
       withSonarQubeEnv('SonarQube installation') {
