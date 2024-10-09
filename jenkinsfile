@@ -1,8 +1,8 @@
 node{
   try {
     stage('Static Analysis') {
-      withSonarQubeEnv('SonarScanner') {
-
+      withSonarQubeEnv('SonarQube installation') {
+        sh 'mvn clean package sonar:sonar'
       }
     }
 
