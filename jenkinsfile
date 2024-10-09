@@ -1,29 +1,45 @@
-node{
-  try {
-    stage('Static Analysis') {
-        environment {
-            scannerHome = tool 'SonarScanner'
+pipeline {
+    agent any
+
+    environment {
+        scannerHome = tool 'SonarScanner' // 确保 'SonarScanner' 是在 Jenkins 中正确配置的工具名称
+    }
+
+    stages {
+        stage('Static Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube installation') { // 确保 'SonarQube installation' 是 Jenkins 中配置的 SonarQube 服务器名称
+                    sh "${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=test \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=http://34.170.88.42:9000 \
+                    -Dsonar.login=squ_e06b5f2551b7a86434027b57f5fc56214644fd1c"
+                }
+            }
         }
-        steps{
-            withSonarQubeEnv('SonarQube installation') {
-                sh "${scannerHome}/bin/sonar-scanner"
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK') {
+                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                    }
+                }
+                echo 'Quality Gate Passed'
             }
         }
     }
 
-    stage('Quality Gate') {
-      timeout(time: 1, unit: 'HOURS') {
-        def qg = waitForQualityGate()
-        if (qg.status != 'OK') {
-          error "Pipeline aborted due to quality gate failure: ${qg.status}"
+    post {
+        failure {
+            echo "Pipeline failed."
         }
-      }
-      echo 'Quality Gate Passed'
+        success {
+            echo "Pipeline succeeded."
+        }
+        always {
+            cleanWs() // 清理工作区
+        }
     }
-
-  } catch (Exception e) {
-    echo "Error: ${e.message}"
-    currentBuild.result = 'FAILURE'
-    throw e
-  }
 }
