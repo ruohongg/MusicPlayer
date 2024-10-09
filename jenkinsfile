@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     environment {
-        scannerHome = tool 'SonarScanner' // 确保 'SonarScanner' 是在 Jenkins 中正确配置的工具名称
+        scannerHome = tool 'SonarScanner'
     }
 
     stages {
         stage('Run Sonarqube') {
             steps {
-                withSonarQubeEnv('SonarQube installation') { // 确保 'SonarQube installation' 是 Jenkins 中配置的 SonarQube 服务器名称
+                withSonarQubeEnv('SonarQube installation') {
                     sh "${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectKey=test \
                     -Dsonar.sources=. \
@@ -20,7 +20,15 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                waitForQualityGate abortPipeline: true
+                script{
+                    timeout(time: 1, unit: 'HOURS') {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
+                    }
+                }
+                echo 'Quality Gate Passed'
             }
         }
     }
