@@ -2,7 +2,7 @@ node{
   try {
     stage('Static Analysis') {
       withSonarQubeEnv('SonarQube installation') {
-        sh 'npm install'
+
       }
     }
 
